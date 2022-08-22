@@ -1,5 +1,7 @@
 const express = require("express");
 const authRouter = express.Router();
+const jwt = require("jsonwebtoken");
+const JWT_KEY = "abcuyw7ygewf76ti2t";
 const userModel = require("../models/userModels");
 
 authRouter
@@ -41,6 +43,9 @@ async function loginUser(req, res) {
       if (user) {
         // bcrypt compare
         if (user.password === data.password) {
+          let uid = user["_id"];
+          let token = jwt.sign({ payload: uid }, JWT_KEY);
+          res.cookie("accessToken", token, { httpOnly: true });
           return res.json({
             message: "Logged in successfully!",
             userDetails: data,
